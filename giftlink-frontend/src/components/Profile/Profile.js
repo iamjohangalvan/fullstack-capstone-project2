@@ -65,6 +65,85 @@ const handleSubmit = async (e) => {
 
     const payload = { ...updatedDetails };
     const response = await fetch(`${urlConfig.backendUrl}/api/auth/update`, {
+      method: "PUT",//Step 1: Task 1
+      headers: {//Step 1: Task 2
+        "Authorization": `Bearer ${authtoken}`,
+        "Content-Type": "application/json",
+        "Email": email,
+      },
+      body: JSON.stringify(payload),//Step 1: Task 3
+    });
+
+    if (response.ok) {
+      // Update the user details in session storage
+      setUserName(updatedDetails.name);//Step 1: Task 4
+      sessionStorage.setItem("name", updatedDetails.name);//Step 1: Task 5
+      setUserDetails(updatedDetails);
+      setEditMode(false);
+      // Display success message to the user
+      setChanged("Name Changed Successfully!");
+      setTimeout(() => {
+        setChanged("");
+        navigate("/");
+      }, 1000);
+
+    } else {
+      // Handle error case
+      throw new Error("Failed to update profile");
+    }
+  } catch (error) {
+    console.error(error);
+    // Handle error case
+  }
+};
+
+return (
+<div className="profile-container">
+  {editMode ? (
+<form onSubmit={handleSubmit}>
+<label>
+  Email
+  <input
+    type="email"
+    name="email"
+    value={userDetails.email}
+    disabled // Disable the email field
+  />
+</label>
+<label>
+   Name
+   <input
+     type="text"
+     name="name"
+     value={updatedDetails.name}
+     onChange={handleInputChange}
+   />
+</label>
+
+<button type="submit">Save</button>
+</form>
+) : (
+<div className="profile-details">
+<h1>Hi, {userDetails.name}</h1>
+<p> <b>Email:</b> {userDetails.email}</p>
+<button onClick={handleEdit}>Edit</button>
+<span style={{color:'green',height:'.5cm',display:'block',fontStyle:'italic',fontSize:'12px'}}>{changed}</span>
+</div>
+)}
+</div>
+);
+};
+
+export default Profile; = sessionStorage.getItem("auth-token");
+    const email = sessionStorage.getItem("email");
+
+    if (!authtoken || !email) {
+      navigate("/app/login");
+      return;
+    }
+
+    const payload = { ...updatedDetails };
+    const response = await fetch(`${urlConfig.backendUrl}/api/auth/update`, {
       //Step 1: Task 1
       //Step 1: Task 2
       //Step 1: Task 3
